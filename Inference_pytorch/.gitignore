@@ -1,0 +1,8 @@
+layer_record/trace_command.sh
+
+*.pyc
+.depend
+main
+NeuroSim_Results_Each_Epoch/
+log/
+*.csv

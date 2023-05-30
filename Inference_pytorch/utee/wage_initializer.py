@@ -39,7 +39,7 @@ def wage_init_(tensor, bits_W, factor=2.0, mode="fan_in"):
     quant_limit,scale = scale_limit(float_limit, bits_W)
     tensor.data.uniform_(-quant_limit, quant_limit)
 
-    print("fan_in {:6d}, float_limit {:.6f}, float std {:.6f}, quant limit {}, scale {}".format(fan_in, float_limit, float_std, quant_limit, scale))
+    # print("fan_in {:6d}, float_limit {:.6f}, float std {:.6f}, quant limit {}, scale {}".format(fan_in, float_limit, float_std, quant_limit, scale))
     return scale
     #import pdb; pdb.set_trace()
 

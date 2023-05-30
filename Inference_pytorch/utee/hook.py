@@ -37,7 +37,7 @@ def write_matrix_weight(input_matrix,filename):
 
 
 def write_matrix_activation_conv(input_matrix,fill_dimension,length,filename):
-    filled_matrix_b = np.zeros([input_matrix.shape[2],input_matrix.shape[1]*length],dtype=np.str)
+    filled_matrix_b = np.zeros([input_matrix.shape[2],input_matrix.shape[1]*length],dtype=np.str_)
     filled_matrix_bin,scale = dec2bin(input_matrix[0,:],length)
     for i,b in enumerate(filled_matrix_bin):
         filled_matrix_b[:,i::length] =  b.transpose()
@@ -46,7 +46,7 @@ def write_matrix_activation_conv(input_matrix,fill_dimension,length,filename):
 
 def write_matrix_activation_fc(input_matrix,fill_dimension,length,filename):
 
-    filled_matrix_b = np.zeros([input_matrix.shape[1],length],dtype=np.str)
+    filled_matrix_b = np.zeros([input_matrix.shape[1],length],dtype=np.str_)
     filled_matrix_bin,scale = dec2bin(input_matrix[0,:],length)
     for i,b in enumerate(filled_matrix_bin):
         filled_matrix_b[:,i] =  b
@@ -125,6 +125,24 @@ def hardware_evaluation(model,wl_weight,wl_activation,model_name,mode):
         os.remove('./layer_record_'+str(model_name)+'/trace_command.sh')
     f = open('./layer_record_'+str(model_name)+'/trace_command.sh', "w")
     f.write('./NeuroSIM/main ./NeuroSIM/NetWork_'+str(model_name)+'.csv '+str(wl_weight)+' '+str(wl_activation)+' ')
+    
+    for i, layer in enumerate(model.modules()):
+        if isinstance(layer, (FConv2d, QConv2d, nn.Conv2d)) or isinstance(layer, (FLinear, QLinear, nn.Linear)):
+            hook_handle_list.append(layer.register_forward_hook(Neural_Sim))
+    return hook_handle_list
+
+def hardware_evaluation_nas(model,wl_weight,wl_activation,model_name,mode): 
+    global model_n, FP
+    model_n = model_name
+    FP = 1 if mode=='FP' else 0
+    
+    hook_handle_list = []
+    if not os.path.exists('./layer_record_'+str(model_name)):
+        os.makedirs('./layer_record_'+str(model_name))
+    if os.path.exists('./layer_record_'+str(model_name)+'/trace_command.sh'):
+        os.remove('./layer_record_'+str(model_name)+'/trace_command.sh')
+    f = open('./layer_record_'+str(model_name)+'/trace_command.sh', "w")
+    f.write('./NeuroSIM/main ./NeuroSIM/NetWork_'+str(model_name)+'_nas.csv '+str(wl_weight)+' '+str(wl_activation)+' ')
     
     for i, layer in enumerate(model.modules()):
         if isinstance(layer, (FConv2d, QConv2d, nn.Conv2d)) or isinstance(layer, (FLinear, QLinear, nn.Linear)):

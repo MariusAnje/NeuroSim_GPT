@@ -9,8 +9,9 @@ class VGG(nn.Module):
     def __init__(self, args, features, num_classes,logger):
         super(VGG, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
-        self.features = features
-        self.classifier = make_layers([('L', 8192, 1024),
+        self.features = features    
+        in_features = features[-3].out_channels * 4 * 4
+        self.classifier = make_layers([('L', in_features, 1024),
                                        ('L', 1024, num_classes)], 
                                        args, logger)
 
@@ -83,8 +84,8 @@ cfg_list = {
                 ('M', 2, 2)]
 }
 
-def vgg8( args, logger, pretrained=None):
-    cfg = cfg_list['vgg8']
+def vgg8(cfg, args, logger, pretrained=None):
+    # cfg = cfg_list['vgg8']
     layers = make_layers(cfg, args, logger)
     model = VGG(args,layers, num_classes=10,logger = logger)
     if pretrained is not None:

@@ -3,16 +3,16 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import os
 
-def get_cifar10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
-    data_root = os.path.expanduser(os.path.join(data_root, 'cifar10-data'))
+def get_cifar10(batch_size, data_root='~/Private/data', train=True, val=True, **kwargs):
+    data_root = os.path.expanduser(os.path.join(data_root))
     num_workers = kwargs.setdefault('num_workers', 1)
     kwargs.pop('input_size', None)
-    print("Building CIFAR-10 data loader with {} workers".format(num_workers))
+    # print("Building CIFAR-10 data loader with {} workers".format(num_workers))
     ds = []
     if train:
         train_loader = torch.utils.data.DataLoader(
             datasets.CIFAR10(
-                root=data_root, train=True, download=True,
+                root=data_root, train=True, download=False,
                 transform=transforms.Compose([
                     transforms.Pad(4),
                     transforms.RandomCrop(32),
@@ -26,7 +26,7 @@ def get_cifar10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True,
     if val:
         test_loader = torch.utils.data.DataLoader(
             datasets.CIFAR10(
-                root=data_root, train=False, download=True,
+                root=data_root, train=False, download=False,
                 transform=transforms.Compose([
                     transforms.ToTensor(),
                     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
@@ -36,11 +36,11 @@ def get_cifar10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True,
     ds = ds[0] if len(ds) == 1 else ds
     return ds
 
-def get_cifar100(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
-    data_root = os.path.expanduser(os.path.join(data_root, 'cifar100-data'))
+def get_cifar100(batch_size, data_root='~/Private/data', train=True, val=True, **kwargs):
+    data_root = os.path.expanduser(os.path.join(data_root))
     num_workers = kwargs.setdefault('num_workers', 1)
     kwargs.pop('input_size', None)
-    print("Building CIFAR-100 data loader with {} workers".format(num_workers))
+    # print("Building CIFAR-100 data loader with {} workers".format(num_workers))
     ds = []
     if train:
         train_loader = torch.utils.data.DataLoader(
@@ -69,10 +69,10 @@ def get_cifar100(batch_size, data_root='/tmp/public_dataset/pytorch', train=True
     ds = ds[0] if len(ds) == 1 else ds
     return ds
 
-def get_imagenet(batch_size, data_root='/home/shimeng/Documents/Data', train=True, val=True, **kwargs):
+def get_imagenet(batch_size, data_root='~/Private/data', train=True, val=True, **kwargs):
     # data_root = data_root
     num_workers = kwargs.setdefault('num_workers', 1)
-    print("Building ImageNet data loader with {} workers".format(num_workers))
+    # print("Building ImageNet data loader with {} workers".format(num_workers))
     
     ds = []
     if train:
