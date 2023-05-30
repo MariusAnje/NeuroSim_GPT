@@ -75,6 +75,13 @@ class NModel(nn.Module):
         for s in size:
             num_features *= s
         return num_features
+    
+    def init_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                if m.bias is not None:
+                    m.bias.data.zero_()
 
 class QNLinear(NModule):
     def __init__(self, N, in_features, out_features, bias=True):
@@ -111,12 +118,7 @@ class QNConv2d(NModule):
         self.scale = 1.0
         self.register_buffer('input_range', torch.zeros(1))
 
-    def init_weights(self):
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                if m.bias is not None:
-                    m.bias.zero_()
+    
 
     def forward(self, x):
         # x = self.function(x, quant(self.N, self.op.weight) + self.noise, None, self.op.stride, self.op.padding, self.op.dilation, self.op.groups)

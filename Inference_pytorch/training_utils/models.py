@@ -78,6 +78,7 @@ class VGG(NModel):
             nn.ReLU(),
             QNLinear(args.wl_weight, 1024, 10)
         )
+        self.init_weights()
 
     def forward(self, x):
         x = self.features(x)

@@ -24,7 +24,7 @@ if __name__ == "__main__":
             help='model to use')
     parser.add_argument('--div', type=int, action='store', default=1,
             help='deprecated')
-    parser.add_argument('--wl_weight', type=int, action='store', default=4,
+    parser.add_argument('--wl_weight', type=int, action='store', default=5,
             help='weight / activation quantization')
     parser.add_argument('--rollout', action='store', default="[[2,0],[2,0],[3,0],[3,0],[4,0],[4,0]]",
             help='weight / activation quantization')
