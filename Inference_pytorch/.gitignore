@@ -6,3 +6,4 @@ main
 NeuroSim_Results_Each_Epoch/
 log/
 *.csv
+*.pt

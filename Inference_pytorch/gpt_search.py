@@ -34,10 +34,21 @@ def parse_neurosim_res(res):
     hw_p_dict = {"area":area,"latency":latency,"energy":energy,"power":power,"fps":fps}
     return hw_p_dict
 
+def parse_ntrain_res(res):
+    res = res.splitlines()
+    flag = False
+    for l in res:
+        l = str(l)
+        if "No mask noise acc: " in l:
+            acc = get_float(l, "No mask noise acc: ", None, 1)
+    return acc
+
 def tradeoff_peformance(accuracy, hw_performance):
     return accuracy + np.sqrt(hw_performance["fps"]/1600)
 
 def main():
+    dev_var = 0.04
+    train_epoch = 100
     openai.api_key = "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"
     system_content, user_input, experiments_prompt, suffix = prompts.system_content, prompts.user_input, prompts.experiments_prompt, prompts.suffix
     arch_list = []
@@ -69,9 +80,10 @@ def main():
             performance = tradeoff_peformance(accuracy, hw_performance)
         else:
             try:
-                res = subprocess.check_output([f"python", f"hw_ana.py", f"--rollout", f"{rollout}"], stderr=subprocess.DEVNULL)
-                hw_performance= parse_neurosim_res(res)
-                accuracy = 1
+                hw_res = subprocess.check_output([f"python", f"hw_ana.py", f"--rollout", f"{rollout}"], stderr=subprocess.DEVNULL)
+                hw_performance= parse_neurosim_res(hw_res)
+                acc_res = subprocess.check_output([f"python", f"noise_train.py", f"--rollout", f"{rollout}", f"--dev_var", f"{dev_var}", f"--train_epoch", f"{train_epoch}"], stderr=subprocess.DEVNULL)
+                accuracy = parse_ntrain_res(acc_res)
                 result_dict[rollout] = (hw_performance, accuracy)
                 performance = tradeoff_peformance(accuracy, hw_performance)
                 hw_performance["accuracy"] = accuracy
