@@ -71,7 +71,13 @@ def main():
         #     p = [np.random.randint(5), np.random.randint(3)]
         #     rollout.append(p)
         # # rollout = [[2,0],[2,0],[3,0],[3,0],[4,0],[4,0]]
-        rollout = [[32, 3], [64, 3], [128, 3], [256, 3], [512, 3], [512, 3]]
+        rollout_l =  [
+                [[32, 3], [64, 3], [128, 3], [256, 3], [512, 3], [512, 3]],
+                [[32, 3], [64, 3], [128, 5], [256, 3], [512, 3], [512, 5]],
+                [[32, 3], [64, 3], [128, 5], [256, 5], [512, 3], [512, 7]],
+                [[32, 5], [64, 5], [128, 5], [256, 5], [512, 7], [512, 7]]
+            ]
+        rollout = rollout_l[0]
         rollout = nas_utils.gpt_to_rollout(rollout)
         rollout = str(rollout)
         if rollout in result_dict:

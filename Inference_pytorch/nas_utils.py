@@ -45,7 +45,7 @@ def generate_csv_content(rollout):
     for i in range(6):
         c_out = _channel_list[rollout[i][0]]
         k_s   = _kernel_list[rollout[i][1]]
-        csv += f"{FM[i]},{FM[i]},{c_in},{k_s},{k_s},{c_out},{i%2},{k_s//2}\n"
+        csv += f"{FM[i]},{FM[i]},{c_in},{k_s},{k_s},{c_out},{i%2},{1}\n"
         c_in = c_out
     csv += f"1,1,{c_in*4*4},1,1,1024,0,1\n"
     csv += f"1,1,1024,1,1,10,0,1\n"

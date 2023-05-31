@@ -7,7 +7,7 @@ _moving_momentum = 0.9
 
 class NModule(nn.Module):
     def set_noise(self, dev_var):
-        self.noise = torch.randn_like(self.op.weight) * dev_var
+        self.noise = torch.randn_like(self.op.weight) * dev_var * self.op.weight.abs().max().item()
     
     def clear_noise(self):
         self.noise = torch.zeros_like(self.op.weight)
