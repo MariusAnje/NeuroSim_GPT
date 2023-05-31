@@ -4,6 +4,8 @@ import subprocess
 import openai
 import prompts
 import nas_utils
+import argparse
+from training_utils.utils import str2bool
 
 def get_float(line, start, offset=None, back=None):
     start = line.find(start) + len(start)
@@ -47,8 +49,21 @@ def tradeoff_peformance(accuracy, hw_performance):
     return accuracy + np.sqrt(hw_performance["fps"]/1600)
 
 def main():
-    dev_var = 0.04
-    train_epoch = 100
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--train_epoch', action='store', type=int, default=100,
+            help='# of epochs of training')
+    parser.add_argument('--dev_var', action='store', type=float, default=0.04,
+            help='device variation [std] before write and verify')
+    parser.add_argument('--device', action='store', default="cuda:0",
+            help='device used')
+    parser.add_argument('--wl_weight', type=int, action='store', default=5,
+            help='weight / activation quantization')
+    parser.add_argument('--use_tqdm', action='store',type=str2bool, default=False,
+            help='whether to use tqdm')
+    args = parser.parse_args()
+
+    dev_var = args.dev_var
+    train_epoch = args.train_epoch
     openai.api_key = "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"
     system_content, user_input, experiments_prompt, suffix = prompts.system_content, prompts.user_input, prompts.experiments_prompt, prompts.suffix
     arch_list = []
@@ -88,7 +103,7 @@ def main():
             try:
                 hw_res = subprocess.check_output([f"python", f"hw_ana.py", f"--rollout", f"{rollout}"], stderr=subprocess.DEVNULL)
                 hw_performance= parse_neurosim_res(hw_res)
-                acc_res = subprocess.check_output([f"python", f"noise_train.py", f"--rollout", f"{rollout}", f"--dev_var", f"{dev_var}", f"--train_epoch", f"{train_epoch}"], stderr=subprocess.DEVNULL)
+                acc_res = subprocess.check_output([f"python", f"noise_train.py", f"--rollout", f"{rollout}", f"--dev_var", f"{dev_var}", f"--train_epoch", f"{train_epoch}", f"--device", f"{args.device}"], stderr=subprocess.DEVNULL)
                 accuracy = parse_ntrain_res(acc_res)
                 result_dict[rollout] = (hw_performance, accuracy)
                 performance = tradeoff_peformance(accuracy, hw_performance)

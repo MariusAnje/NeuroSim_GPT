@@ -67,7 +67,8 @@ def main():
     # logger("========================================")
 
     # seed
-    args.cuda = torch.cuda.is_available()
+    # args.cuda = torch.cuda.is_available()
+    args.cuda = False
     torch.manual_seed(args.seed)
     if args.cuda:
         torch.cuda.manual_seed(args.seed)
@@ -102,8 +103,8 @@ def main():
     else:
         raise ValueError("Unknown model type")
 
-    if args.cuda:
-        modelCF.cuda()
+    # if args.cuda:
+    #     modelCF.cuda()
 
     best_acc, old_file = 0, None
     t_begin = time.time()
@@ -124,8 +125,8 @@ def main():
             nas_utils.write_csv(args.rollout)
             hook_handle_list = hook.hardware_evaluation_nas(modelCF,args.wl_weight,args.wl_activate,args.model,args.mode)
         indx_target = target.clone()
-        if args.cuda:
-            data, target = data.cuda(), target.cuda()
+        # if args.cuda:
+        #     data, target = data.cuda(), target.cuda()
         with torch.no_grad():
             data, target = Variable(data), Variable(target)
             output = modelCF(data)
@@ -135,11 +136,12 @@ def main():
             correct += pred.cpu().eq(indx_target).sum()
         if i==0:
             hook.remove_hook_list(hook_handle_list)
+            break
 
-    test_loss = test_loss / len(test_loader)  # average over number of mini-batch
-    acc = 100. * correct / len(test_loader.dataset)
+    # test_loss = test_loss / len(test_loader)  # average over number of mini-batch
+    # acc = 100. * correct / len(test_loader.dataset)
 
-    accuracy = acc.cpu().data.numpy()
+    # accuracy = acc.cpu().data.numpy()
 
     if args.inference:
         print(" --- Hardware Properties --- ")
