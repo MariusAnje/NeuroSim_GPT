@@ -33,17 +33,21 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     header = time.time()
-    device = torch.device("cuda:0")
+    device = torch.device(args.device)
     BS = 128
     NW = 4
     trainloader, secondloader, testloader = get_dataset(args, BS, NW)
     rollout = args.rollout
     cfg = get_cfg_from_rollout(rollout)
-    model = get_model_cfg(cfg, args)
-    model, optimizer, warm_optimizer, scheduler = prepare_model(model, device, args)
-    criteriaF = nn.CrossEntropyLoss()
-    model_group = model, criteriaF, optimizer, scheduler, device, trainloader, testloader
-    NTrain(model_group, args.train_epoch, header, args.dev_var, verbose=True)
+    for _ in range(10):
+        model = get_model_cfg(cfg, args)
+        model, optimizer, warm_optimizer, scheduler = prepare_model(model, device, args)
+        criteriaF = nn.CrossEntropyLoss()
+        model_group = model, criteriaF, optimizer, scheduler, device, trainloader, testloader
+        best_acc = NTrain(model_group, 3, header, args.dev_var, verbose=True)
+        if best_acc > 0.15:
+            break
+    NTrain(model_group, args.train_epoch-3, header, args.dev_var, verbose=True)
     state_dict = torch.load(f"tmp_best_{header}.pt")
     model.load_state_dict(state_dict)
     performance = NEachEval(model_group, args.dev_var)

@@ -300,6 +300,7 @@ def NTrain(model_group, epochs, header, dev_var, verbose=False):
         if verbose:
             print(f"epoch: {i:-3d}, test acc: {test_acc:.4f}, loss: {running_loss / len(trainloader):.4f}")
         scheduler.step()
+    return best_acc
 
 def str2bool(a):
     if a == "True":

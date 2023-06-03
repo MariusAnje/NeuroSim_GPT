@@ -46,12 +46,14 @@ def parse_ntrain_res(res):
     return acc
 
 def tradeoff_peformance(accuracy, hw_performance):
-    return accuracy + np.sqrt(hw_performance["fps"]/1600)
+    return accuracy + hw_performance["fps"]/1600
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_epoch', action='store', type=int, default=100,
             help='# of epochs of training')
+    parser.add_argument('--rollout_id', action='store', type=int, default=-1,
+            help='which rollout to use')
     parser.add_argument('--dev_var', action='store', type=float, default=0.04,
             help='device variation [std] before write and verify')
     parser.add_argument('--device', action='store', default="cuda:0",
@@ -90,9 +92,22 @@ def main():
                 [[32, 3], [64, 3], [128, 3], [256, 3], [512, 3], [512, 3]],
                 [[32, 3], [64, 3], [128, 5], [256, 3], [512, 3], [512, 5]],
                 [[32, 3], [64, 3], [128, 5], [256, 5], [512, 3], [512, 7]],
-                [[32, 5], [64, 5], [128, 5], [256, 5], [512, 7], [512, 7]]
+                [[32, 5], [64, 5], [128, 5], [256, 5], [512, 7], [512, 7]],
+                [[64, 3], [128, 3], [256, 3], [256, 5], [512, 5], [512, 5]],
+                [[64, 3], [128, 3], [256, 5], [256, 5], [512, 5], [512, 7]],
+                [[64, 3], [128, 5], [256, 5], [256, 5], [512, 7], [512, 7]],
+                [[64, 3], [128, 3], [256, 5], [512, 5], [512, 7], [256, 7]],
+                [[64, 3], [128, 5], [256, 7], [512, 5], [512, 7], [128, 7]],
+                [[64, 5], [128, 5], [256, 5], [256, 7], [512, 7], [128, 7]],
+                [[64, 3], [128, 5], [256, 7], [256, 7], [512, 5], [256, 5]],
+                [[64, 5], [128, 3], [256, 7], [256, 5], [512, 7], [256, 3]],
+                [[64, 5], [128, 5], [256, 3], [256, 5], [512, 5], [256, 3]],
+                [[64, 3], [128, 5], [256, 3], [512, 7], [512, 3], [256, 5]],
+                [[64, 5], [128, 3], [256, 7], [512, 3], [512, 5], [256, 7]],
+                [[64, 5], [128, 3], [256, 5], [512, 3], [512, 5], [256, 5]],
+                [[64, 3], [128, 5], [256, 3], [256, 7], [512, 5], [512, 7]]
             ]
-        rollout = rollout_l[0]
+        rollout = rollout_l[args.rollout_id]
         rollout = nas_utils.gpt_to_rollout(rollout)
         rollout = str(rollout)
         if rollout in result_dict:
